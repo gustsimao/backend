@@ -1,4 +1,4 @@
-onst express = require('express');
+const express = require('express');
 const router = express.Router();
 const gerarSenha = require('../utils/gerarSenha');
 const enviarEmail = require('../services/email');
