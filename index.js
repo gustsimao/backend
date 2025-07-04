@@ -2,8 +2,6 @@ require('dotenv').config(); // Carrega as variáveis do .env
 const express = require('express');
 const cors = require('cors');
 
-const app = express();
-
 // Configure CORS para aceitar só seu frontend (mais seguro)
 app.use(cors({
   origin: 'https://gustsimao.github.io'
