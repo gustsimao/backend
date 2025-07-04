@@ -1,11 +1,8 @@
-const express = require('express');
+onst express = require('express');
 const router = express.Router();
-const { createClient } = require('@supabase/supabase-js');
 const gerarSenha = require('../utils/gerarSenha');
 const enviarEmail = require('../services/email');
-
-// Configurar Supabase
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabase = require('../services/supabase');
 
 // Rota para cadastrar médico
 router.post('/cadastro-medico', async (req, res) => {
