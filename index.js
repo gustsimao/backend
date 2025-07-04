@@ -1,25 +1,24 @@
-require('dotenv').config();
+require('dotenv').config(); // Carrega as variáveis do .env
 const express = require('express');
 const cors = require('cors');
-
-const app = express();
-const PORT = process.env.PORT || 10000;
-
-// ✅ Permite requisições do GitHub Pages
-app.use(cors({
-  origin: 'https://gustsimao.github.io'
-}));
-
-app.use(express.json());
 
 const authRoutes = require('./routes/auth');
 const medicoRoutes = require('./routes/medico');
 const pacienteRoutes = require('./routes/paciente');
 
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Rotas
 app.use('/auth', authRoutes);
 app.use('/medico', medicoRoutes);
 app.use('/paciente', pacienteRoutes);
 
+// Rota raiz
 app.get('/', (req, res) => {
   res.send('✅ Backend funcionando!');
 });
