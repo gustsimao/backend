@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const gerarSenha = require('../utils/gerarSenha');
-//const enviarEmail = require('../services/email');
+const enviarEmail = require('../services/email');
 const supabase = require('../services/supabase');
 
 // Rota para cadastrar médico
@@ -20,11 +20,11 @@ router.post('/cadastro-medico', async (req, res) => {
   }
 
   // Enviar e-mail com a senha
-//  await enviarEmail({
-//    to: email,
-//    subject: 'Cadastro realizado com sucesso',
-//    text: `Olá Dr(a). ${nome},\n\nSeu cadastro foi realizado com sucesso!\nLogin: ${email}\nSenha: ${senha}`
-//  });
+ await enviarEmail({
+    to: email,
+    subject: 'Cadastro realizado com sucesso',
+    text: `Olá Dr(a). ${nome},\n\nSeu cadastro foi realizado com sucesso!\nLogin: ${email}\nSenha: ${senha}`
+  });
 
   res.json({ mensagem: 'Cadastro realizado com sucesso!' });
 });
