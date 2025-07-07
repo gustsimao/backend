@@ -24,6 +24,8 @@ async function enviarEmail(destinatario, assunto, corpoHtml) {
     });
 
     console.log(`✉️ E-mail enviado para ${destinatario}: ${info.messageId}`);
+    console.log("Tentando enviar e-mail para:", destinatario);
+
     return info;
   } catch (erro) {
     console.error('Erro ao enviar e-mail:', erro);
