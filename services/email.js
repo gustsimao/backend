@@ -6,7 +6,7 @@ const transporter = nodemailer.createTransport({
   port: process.env.EMAIL_PORT || 587,               // porta TLS para Gmail
   secure: false, // false para TLS (porta 587), true para SSL (porta 465)
   auth: {
-    user: process.env.gsrwebconsulting@gmail.com,
+    user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS, // deve ser senha de app do Gmail
   },
   tls: {
