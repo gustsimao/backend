@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
 const gerarSenha = require('../utils/gerarSenha');
-//const enviarEmail = require('../services/email');
+const enviarEmail = require('../services/email');
 
 // Cadastro de médico
 router.post('/cadastro-medico', async (req, res) => {
