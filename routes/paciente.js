@@ -19,7 +19,7 @@ router.post('/cadastro-paciente', async (req, res) => {
     return res.status(500).json({ erro: 'Erro ao cadastrar paciente.' });
   }
 
-   Enviar email com a senha
+   //Enviar email com a senha
  await enviarEmail({
     to: email,
    subject: 'Cadastro de paciente realizado',
