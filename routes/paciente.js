@@ -12,7 +12,7 @@ router.post('/cadastro-paciente', async (req, res) => {
 
   const { error } = await supabase
     .from('pacientes')
-    .insert([{ nome, , nascimento, endereco, senha }]);
+    .insert([{ nome, nascimento, endereco, senha }]);
 
   if (error) {
     console.error(error);
