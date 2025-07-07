@@ -20,11 +20,16 @@ router.post('/cadastro-medico', async (req, res) => {
   }
 
   // Enviar e-mail com a senha
- await enviarEmail({
-    to: email,
-    subject: 'Cadastro realizado com sucesso',
-    text: `Olá Dr(a). ${nome},\n\nSeu cadastro foi realizado com sucesso!\nLogin: ${email}\nSenha: ${senha}`
-  });
+const corpoHtml = `
+  <h2>Olá Dr(a). ${nome},</h2>
+  <p>Seu cadastro foi realizado com sucesso no sistema de monitoramento.</p>
+  <p><strong>Login:</strong> ${email}</p>
+  <p><strong>Senha:</strong> ${senha}</p>
+`;
+
+await enviarEmail(email, 'Cadastro realizado com sucesso', corpoHtml);
+
+
 
   res.json({ mensagem: 'Cadastro realizado com sucesso!' });
 });
