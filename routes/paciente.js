@@ -59,3 +59,6 @@ router.post('/cadastro-paciente', async (req, res) => {
     res.status(500).json({ erro: 'Paciente cadastrado, mas houve erro ao enviar e-mails.' });
   }
 });
+
+module.exports = router;
+
