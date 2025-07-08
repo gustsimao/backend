@@ -12,9 +12,9 @@ function gerarCodigoNumerico() {
 router.post('/cadastro-paciente', async (req, res) => {
   const { nome, email, nascimento, endereco, medicamento, codigo_medico } = req.body;
 
-  const codigo = gerarCodigoNumerico(); // Ex: "483726"
+  const codigo = gerarCodigoNumerico();
 
-  // Inserir paciente no Supabase
+  // Inserir no Supabase
   const { error } = await supabase
     .from('pacientes')
     .insert([{ nome, email, nascimento, endereco, medicamento, codigo_medico, codigo }]);
@@ -26,23 +26,23 @@ router.post('/cadastro-paciente', async (req, res) => {
 
   try {
     // E-mail para o paciente
-    await enviarEmail(
-      email,
-      'Cadastro no Appressão',
-      `<p>Olá ${nome},</p>
-       <p>Você foi cadastrado no sistema de monitoramento de pressão "Appressão".</p>
-       <p>Seu código de acesso é: <strong>${codigo}</strong></p>
-       <p>Em caso de dúvidas, entre em contato com seu médico responsável.</p>`
-    );
+    await enviarEmail({
+      to: email,
+      subject: 'Cadastro no Appressão',
+      html: `<p>Olá ${nome},</p>
+             <p>Você foi cadastrado no sistema de monitoramento de pressão <strong>Appressão</strong>.</p>
+             <p>Seu código de acesso é: <strong>${codigo}</strong></p>
+             <p>Em caso de dúvidas, entre em contato com seu médico.</p>`
+    });
 
     // E-mail para o médico
-    await enviarEmail(
-      codigo_medico,
-      'Novo paciente cadastrado no Appressão',
-      `<p>Olá,</p>
-       <p>O paciente <strong>${nome}</strong> foi cadastrado com sucesso.</p>
-       <p>Código do paciente: <strong>${codigo}</strong></p>`
-    );
+    await enviarEmail({
+      to: codigo_medico,
+      subject: 'Novo paciente cadastrado no Appressão',
+      html: `<p>Olá,</p>
+             <p>O paciente <strong>${nome}</strong> foi cadastrado com sucesso.</p>
+             <p>Código do paciente: <strong>${codigo}</strong></p>`
+    });
 
     res.json({ mensagem: 'Paciente cadastrado com sucesso.' });
 
