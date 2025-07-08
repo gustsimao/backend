@@ -15,14 +15,14 @@ router.post('/cadastro-paciente', async (req, res) => {
   const codigo = gerarCodigoNumerico();
 
   // Inserir no Supabase
-  const { error } = await supabase
-    .from('pacientes')
-    .insert([{ nome, email, nascimento, endereco, medicamento, codigo_medico, codigo }]);
+const { data, error } = await supabase
+  .from('pacientes')
+  .insert([{ nome, email, nascimento, endereco, medicamento, codigo_medico, codigo }]);
 
-  if (error) {
-    console.error('Erro ao inserir paciente:', error);
-    return res.status(500).json({ erro: 'Erro ao cadastrar paciente.' });
-  }
+if (error) {
+  console.error('Erro ao inserir paciente:', error);  // Mostra detalhes
+  return res.status(500).json({ erro: `Erro ao cadastrar paciente: ${error.message}` });
+}
 
   try {
     // E-mail para o paciente
