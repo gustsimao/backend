@@ -2,18 +2,24 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com', // padrão para Gmail
-  port: process.env.EMAIL_PORT || 587,               // porta TLS para Gmail
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.EMAIL_PORT) || 587,
   secure: false, // false para TLS (porta 587), true para SSL (porta 465)
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // deve ser senha de app do Gmail
+    pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false,  // evita erros com certificados autoassinados
+    rejectUnauthorized: false
   }
 });
 
+/**
+ * Envia um e-mail utilizando as credenciais do transporter
+ * @param {string} destinatario - E-mail de destino
+ * @param {string} assunto - Assunto do e-mail
+ * @param {string} corpoHtml - Conteúdo HTML do e-mail
+ */
 async function enviarEmail(destinatario, assunto, corpoHtml) {
   try {
     const info = await transporter.sendMail({
@@ -23,14 +29,13 @@ async function enviarEmail(destinatario, assunto, corpoHtml) {
       html: corpoHtml,
     });
 
-    console.log(`✉️ E-mail enviado para ${destinatario}: ${info.messageId}`);
-    console.log("Tentando enviar e-mail para:", destinatario);
-
+    console.log(`✅ E-mail enviado para ${destinatario} | ID: ${info.messageId}`);
     return info;
   } catch (erro) {
-    console.error('Erro ao enviar e-mail:', erro);
-    throw erro;  // propaga o erro para o chamador tratar
+    console.error(`❌ Falha ao enviar e-mail para ${destinatario}:`, erro.message);
+    throw erro;
   }
 }
 
 module.exports = enviarEmail;
+
