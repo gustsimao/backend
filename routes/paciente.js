@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const gerarSenha = require('../utils/gerarSenha');
 const supabase = require('../services/supabase');
-const enviarEmail = require('../services/email');
+const enviarEmail = require('../services/email-paciente');
 
 // Função para gerar código numérico aleatório de 6 dígitos
 function gerarCodigoNumerico() {
@@ -41,7 +41,7 @@ router.post('/cadastro-paciente', async (req, res) => {
 
   try {
     // Enviar e-mail para o paciente
-    await enviarEmail(
+    await enviarEmailPaciente(
       email,
       'Cadastro no Appressão',
       `<p>Olá ${nome},</p>
