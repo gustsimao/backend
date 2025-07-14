@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const gerarSenha = require('../utils/gerarSenha');
 const supabase = require('../services/supabase');
 const enviarEmail = require('../services/email');
 
@@ -12,7 +13,9 @@ function gerarCodigoNumerico() {
 router.post('/cadastro-paciente', async (req, res) => {
   const { nome, email, nascimento, endereco, medicamentos, medico_id } = req.body;
 
-  const codigo = gerarCodigoNumerico();
+
+  const codigo = gerarSenha(); // Ex: G8kd3z
+
 
   console.log('📥 Recebendo dados para cadastro de paciente:', {
     nome, email, nascimento, endereco, medicamentos, medico_id
