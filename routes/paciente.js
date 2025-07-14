@@ -2,20 +2,13 @@ const express = require('express');
 const router = express.Router();
 const gerarSenha = require('../utils/gerarSenha');
 const supabase = require('../services/supabase');
-const enviarEmail = require('../services/email-paciente');
-
-// Função para gerar código numérico aleatório de 6 dígitos
-function gerarCodigoNumerico() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+const enviarEmailPaciente = require('../services/email-paciente'); // Nome corrigido
 
 // Rota para cadastro de paciente
 router.post('/cadastro-paciente', async (req, res) => {
   const { nome, email, nascimento, endereco, medicamentos, medico_id } = req.body;
 
-
   const codigo = gerarSenha(); // Ex: G8kd3z
-
 
   console.log('📥 Recebendo dados para cadastro de paciente:', {
     nome, email, nascimento, endereco, medicamentos, medico_id
@@ -29,7 +22,7 @@ router.post('/cadastro-paciente', async (req, res) => {
       email,
       nascimento,
       endereco,
-      medicamentos,  // campo correto conforme sua tabela
+      medicamentos,
       codigo,
       medico_id
     }]);
@@ -39,30 +32,44 @@ router.post('/cadastro-paciente', async (req, res) => {
     return res.status(500).json({ erro: 'Erro ao cadastrar paciente.' });
   }
 
+  // Buscar e-mail do médico
+  const { data: medico, error: erroMedico } = await supabase
+    .from('medicos')
+    .select('email')
+    .eq('id', medico_id)
+    .single();
+
+  if (erroMedico || !medico?.email) {
+    console.warn('⚠️ Paciente cadastrado, mas não foi possível recuperar e-mail do médico.');
+  }
+
+  // Enviar e-mails
+  const corpoPaciente = `
+    <h2>Olá ${nome},</h2>
+    <p>Você foi cadastrado no sistema de monitoramento de pressão "Appressão".</p>
+    <p><strong>Seu código de acesso:</strong> ${codigo}</p>
+    <p>Em caso de dúvidas, entre em contato com seu médico.</p>
+  `;
+
+  const corpoMedico = `
+    <h2>Olá,</h2>
+    <p>O paciente <strong>${nome}</strong> foi cadastrado com sucesso.</p>
+    <p><strong>Código do paciente:</strong> ${codigo}</p>
+  `;
+
   try {
-    // Enviar e-mail para o paciente
-    await enviarEmailPaciente(
-      email,
-      'Cadastro no Appressão',
-      `<p>Olá ${nome},</p>
-       <p>Você foi cadastrado no sistema de monitoramento de pressão "Appressão".</p>
-       <p>Seu código de acesso é: <strong>${codigo}</strong></p>
-       <p>Em caso de dúvidas, entre em contato com seu médico responsável.</p>`
-    );
+    await enviarEmailPaciente(email, 'Cadastro no Appressão', corpoPaciente);
 
-    // (Opcional) Buscar e-mail do médico a partir do UUID, se quiser enviar também para o médico:
-    // const { data: medico, error: erroMedico } = await supabase.from('medicos').select('email').eq('id', medico_id).single();
-    // if (!erroMedico && medico?.email) {
-    //   await enviarEmail(medico.email, 'Novo paciente cadastrado', `O paciente ${nome} foi cadastrado.`);
-    // }
+    if (medico?.email) {
+      await enviarEmailPaciente(medico.email, 'Novo paciente cadastrado no Appressão', corpoMedico);
+    }
 
-    console.log(`✅ Paciente ${nome} cadastrado com sucesso.`);
-
+    console.log(`✅ Paciente ${nome} cadastrado e e-mails enviados.`);
     res.json({ mensagem: 'Paciente cadastrado com sucesso.' });
 
   } catch (erro) {
     console.error('⚠️ Erro ao enviar e-mail:', erro);
-    res.status(500).json({ erro: 'Paciente cadastrado, mas houve erro ao enviar e-mail.' });
+    res.status(500).json({ erro: 'Paciente cadastrado, mas houve erro ao enviar e-mails.' });
   }
 });
 
