@@ -11,7 +11,21 @@ const enviarEmailPaciente = require('../services/email-paciente');
 router.post('/listar-pacientes', async (req, res) => {
   const { emailMedico } = req.body;
 
+  console.log('📨 Requisição recebida com emailMedico:', emailMedico);
+
   try {
+    // Busca todos os médicos cadastrados (para debug)
+    const { data: todosMedicos, error: erroTodos } = await supabase
+      .from('medicos')
+      .select('id, email');
+
+    if (erroTodos) {
+      console.error('❌ Erro ao buscar todos os médicos:', erroTodos.message);
+    } else {
+      console.log('👨‍⚕️ Médicos cadastrados no Supabase:');
+      console.table(todosMedicos);
+    }
+
     // Busca o médico pelo email
     const { data: medico, error: erroMedico } = await supabase
       .from('medicos')
@@ -20,8 +34,11 @@ router.post('/listar-pacientes', async (req, res) => {
       .single();
 
     if (erroMedico || !medico) {
+      console.warn('⚠️ Médico não encontrado com email:', emailMedico);
       return res.status(404).json({ erro: 'Médico não encontrado.' });
     }
+
+    console.log('✅ Médico encontrado com ID:', medico.id);
 
     // Busca os pacientes vinculados ao médico
     const { data: pacientes, error: erroPacientes } = await supabase
@@ -34,12 +51,15 @@ router.post('/listar-pacientes', async (req, res) => {
       return res.status(500).json({ erro: 'Erro ao buscar pacientes.' });
     }
 
+    console.log(`👥 ${pacientes.length} pacientes encontrados para o médico.`);
+
     res.json(pacientes);
   } catch (err) {
     console.error('❌ Erro inesperado ao listar pacientes:', err.message);
     res.status(500).json({ erro: 'Erro interno no servidor.' });
   }
 });
+
 
 
 // 📌 Cadastro de médico
