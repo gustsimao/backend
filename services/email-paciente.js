@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const supabase = require('./supabase'); // ✅ Importa conexão com Supabase
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -19,11 +20,24 @@ const transporter = nodemailer.createTransport({
  * @param {string} emailPaciente - Email do paciente
  * @param {string} nomePaciente - Nome do paciente
  * @param {string} codigo - Código de acesso do paciente
- * @param {string} emailMedico - Email do médico responsável
+ * @param {string} medico_id - UUID do médico responsável
  */
-async function enviarEmailPaciente(emailPaciente, nomePaciente, codigo, emailMedico) {
+async function enviarEmailPaciente(emailPaciente, nomePaciente, codigo, medico_id) {
   try {
-    // E-mail para o paciente
+    // 🔎 Busca o e-mail do médico no Supabase
+    const { data: medico, error } = await supabase
+      .from('medicos')
+      .select('email')
+      .eq('id', medico_id)
+      .single();
+
+    if (error || !medico) {
+      throw new Error('Não foi possível obter o e-mail do médico.');
+    }
+
+    const emailMedico = medico.email;
+
+    // 📧 E-mail para o paciente
     const infoPaciente = await transporter.sendMail({
       from: `"Appressão" <${process.env.EMAIL_USER}>`,
       to: emailPaciente,
@@ -37,7 +51,7 @@ async function enviarEmailPaciente(emailPaciente, nomePaciente, codigo, emailMed
     });
     console.log(`📧 E-mail enviado ao paciente: ${emailPaciente} | ID: ${infoPaciente.messageId}`);
 
-    // E-mail para o médico
+    // 📧 E-mail para o médico
     const infoMedico = await transporter.sendMail({
       from: `"Appressão" <${process.env.EMAIL_USER}>`,
       to: emailMedico,
