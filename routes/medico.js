@@ -31,7 +31,7 @@ router.post('/listar-pacientes', async (req, res) => {
       .from('medicos')
       .select('id')
       .eq('email', emailMedico)
-      .single();
+      .limit(1);
 
     if (erroMedico || !medico) {
       console.warn('⚠️ Médico não encontrado com email:', emailMedico);
@@ -97,7 +97,7 @@ router.post('/login-medico', async (req, res) => {
     .select('*')
     .eq('email', email)
     .eq('senha', senha)
-    .single();
+    .limit(1);
 
   if (error || !data) {
     return res.status(401).json({ erro: 'Login ou senha inválidos.' });
