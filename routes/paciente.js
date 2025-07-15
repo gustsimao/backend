@@ -4,6 +4,28 @@ const gerarSenha = require('../utils/gerarSenha');
 const supabase = require('../services/supabase');
 const enviarEmailPaciente = require('../services/email-paciente'); // Nome corrigido
 
+//rota para visualização de dados
+router.post('/obter-dados', async (req, res) => {
+  const { id } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ erro: 'ID do paciente não fornecido.' });
+  }
+
+  const { data, error } = await supabase
+    .from('pacientes')
+    .select('id, nome, email, nascimento, endereco, medicamentos')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ erro: 'Paciente não encontrado.' });
+  }
+
+  res.json(data);
+});
+
+
 // Rota para cadastro de paciente
 router.post('/cadastro-paciente', async (req, res) => {
   const { nome, email, nascimento, endereco, medicamentos, medico_id } = req.body;
