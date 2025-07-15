@@ -6,6 +6,22 @@ const supabase = require('../services/supabase');
 const enviarEmailPaciente = require('../services/email-paciente');
 
 
+// routes/medico.js
+const express = require('express');
+const router = express.Router();
+
+const pacientes = [
+  { id: 1, nome: 'João Silva', idade: 30 },
+  { id: 2, nome: 'Maria Souza', idade: 25 },
+  { id: 3, nome: 'Carlos Pereira', idade: 40 },
+];
+
+router.post('/listar-pacientes', (req, res) => {
+  res.json(pacientes);
+});
+
+
+
 // 📌 Cadastro de médico
 router.post('/cadastro-medico', async (req, res) => {
   const { nome, email, crm, nascimento, endereco } = req.body;
