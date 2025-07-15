@@ -8,17 +8,38 @@ const enviarEmailPaciente = require('../services/email-paciente');
 
 // routes/medico.js
 
+router.post('/listar-pacientes', async (req, res) => {
+  const { emailMedico } = req.body;
 
-const pacientes = [
-  { id: 1, nome: 'João Silva', idade: 30 },
-  { id: 2, nome: 'Maria Souza', idade: 25 },
-  { id: 3, nome: 'Carlos Pereira', idade: 40 },
-];
+  try {
+    // Busca o médico pelo email
+    const { data: medico, error: erroMedico } = await supabase
+      .from('medicos')
+      .select('id')
+      .eq('email', emailMedico)
+      .single();
 
-router.post('/listar-pacientes', (req, res) => {
-  res.json(pacientes);
+    if (erroMedico || !medico) {
+      return res.status(404).json({ erro: 'Médico não encontrado.' });
+    }
+
+    // Busca os pacientes vinculados ao médico
+    const { data: pacientes, error: erroPacientes } = await supabase
+      .from('pacientes')
+      .select('id, nome, email, nascimento')
+      .eq('medico_id', medico.id);
+
+    if (erroPacientes) {
+      console.error('❌ Erro ao buscar pacientes:', erroPacientes.message);
+      return res.status(500).json({ erro: 'Erro ao buscar pacientes.' });
+    }
+
+    res.json(pacientes);
+  } catch (err) {
+    console.error('❌ Erro inesperado ao listar pacientes:', err.message);
+    res.status(500).json({ erro: 'Erro interno no servidor.' });
+  }
 });
-
 
 
 // 📌 Cadastro de médico
