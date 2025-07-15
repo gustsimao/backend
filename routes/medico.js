@@ -7,8 +7,7 @@ const enviarEmailPaciente = require('../services/email-paciente');
 
 
 // routes/medico.js
-const express = require('express');
-const router = express.Router();
+
 
 const pacientes = [
   { id: 1, nome: 'João Silva', idade: 30 },
