@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 10000;
 // Middlewares
 //app.use(cors());
 app.use(cors({
-  origin: 'https://gustsimao.github.io'
+  origin: '*',
 }));
 app.use(express.json());
 
